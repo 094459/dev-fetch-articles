@@ -2,6 +2,9 @@
  * curl -H "api-key: API_KEY" https://dev.to/api/articles/me/published
  */
 
+// Amended from original script at iggredible/dev-fetch-articles
+// to export md in files that I can use in Hugo
+
 require('dotenv').config()
 const axios = require('axios')
 const fs = require('fs')
@@ -32,8 +35,12 @@ axios
       const normalizedPublishedAt = article.published_at.split('T')[0]
       const fileName = `${normalizedPublishedAt}_${normalizedTitle}.md`
       const markdown = article.body_markdown.split('\n')
+      const hugomarkdown = "---"
+      const hugotags = "tags : [ oss-newsletter ]"
+      const hugotitle = article.title
       const markdownDate = `date: '${normalizedPublishedAt}'`
-      let markdownSplice = markdown.splice(2, 0, markdownDate)
+      const markdownTitle = `title: '${hugotitle}'`
+      let markdownSplice = markdown.splice(0, 0, hugomarkdown, markdownTitle, markdownDate, hugotags, hugomarkdown)
 
       console.log(`${contentDir}${fileName} created!`)
       fs.writeFileSync(
